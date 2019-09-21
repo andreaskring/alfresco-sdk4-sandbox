@@ -1,7 +1,9 @@
 package dk.magenta.sdk4.webscripts;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.rest.api.Nodes;
 import org.alfresco.rest.api.model.Node;
+import org.alfresco.rest.framework.WebApiNoAuth;
 import org.alfresco.rest.framework.core.exceptions.EntityNotFoundException;
 import org.alfresco.rest.framework.resource.EntityResource;
 import org.alfresco.rest.framework.resource.actions.interfaces.EntityResourceAction;
@@ -13,8 +15,9 @@ public class SandboxEntityResource implements EntityResourceAction.ReadById<Node
     private Nodes nodes;
 
     @Override
+    @WebApiNoAuth
     public Node readById(String id, Parameters parameters) throws EntityNotFoundException {
-        return nodes.getFolderOrDocument(id, parameters);
+        return AuthenticationUtil.runAsSystem(() -> nodes.getFolderOrDocument(id, parameters));
     }
 
     public void setNodes(Nodes nodes) {
